@@ -1,0 +1,49 @@
+version: "3"
+services:
+  mongo:
+    image: mongo
+    container_name: mongo-container
+    network_mode: host
+    volumes:
+      - /home/cgi/docker-volume:/data/db
+
+
+  track-service:
+    build: track-service/
+    container_name: track-service-container
+    ports:
+      - 8080:8080
+    network_mode: host
+
+  user-service:
+    build: user-service/
+    container_name: user-service-container
+    network_mode: host
+    ports:
+      - 8000:8000
+    restart: always
+
+  api-gateway:
+    build: api-gateway/
+    container_name: api-gateway-container
+    network_mode: host
+    ports:
+      - 8081:8081
+    depends_on:
+      - track-service
+    restart: always
+
+  config-server:
+    build: config-server/
+    container_name: config-server-container
+    ports:
+      - 8050:8050
+    network_mode: host
+
+  eureka-server:
+    build: eureka-server/
+    container_name: eureka-server-container
+    network_mode: host
+    ports:
+      - 8020:8020
+    restart: always
